@@ -18,7 +18,7 @@ const MeetOurTeam = () => {
         <li>ALAKUNTA MALLIKARJUNA - Founder & CEO</li>
         <li>V SAI CHARAN- Environmental Scientist</li>
         <li>S PRUDHVI KUMAR - Sustainability Consultant</li>
-        <li>R VENKATESWAR REDDY- INVERSTOR</li>
+        <li>R VENKATESWAR REDDY- INVESTOR</li>
       </ul>
     </div>
   );
