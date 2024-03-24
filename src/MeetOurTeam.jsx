@@ -15,9 +15,10 @@ const MeetOurTeam = () => {
       </p>
       <p className="text-lg">Get to know our team:</p>
       <ul className="list-disc pl-6">
-        <li>John Doe - Founder & CEO</li>
-        <li>Jane Smith - Environmental Scientist</li>
-        <li>Mark Johnson - Sustainability Consultant</li>
+        <li>ALAKUNTA MALLIKARJUNA - Founder & CEO</li>
+        <li>V SAI CHARAN- Environmental Scientist</li>
+        <li>S PRUDHVI KUMAR - Sustainability Consultant</li>
+        <li>R VENKATESWAR REDDY- INVERSTOR</li>
       </ul>
     </div>
   );
