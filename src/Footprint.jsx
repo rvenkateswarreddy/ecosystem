@@ -31,9 +31,7 @@ const Footprint = () => {
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-gray-100 rounded-md shadow-md">
-      <h2 className="text-xl font-semibold mb-4">
-        Carbon Footprint Calculator
-      </h2>
+      <h2 className="text-xl font-semibold mb-4">Carbon emission Calculator</h2>
       <div className="mb-4">
         <label htmlFor="energy" className="block mb-2">
           Energy Consumption (kg CO2/year):

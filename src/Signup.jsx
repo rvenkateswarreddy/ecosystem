@@ -1,165 +1,213 @@
-// Import necessary dependencies
 import React, { useState } from "react";
 import axios from "axios";
-import { Form, Button, Container } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import "./Signup.css";
 
 const Signup = () => {
-  const [textAdmin, settextAdmin] = useState(false);
   const [formData, setFormData] = useState({
-    usertype: "user", // Default to "user"
-    secretkey: "",
     fullname: "",
     email: "",
     mobile: "",
     password: "",
     confirmpassword: "",
+    role: "user", // default role is "user"
+    adminSecretKey: "", // For admin registration
   });
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
+
+  const {
+    fullname,
+    email,
+    mobile,
+    password,
+    confirmpassword,
+    role,
+    adminSecretKey,
+  } = formData;
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  const navigate = useNavigate();
-
-  const handleSignup = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    settextAdmin(true);
+
+    // Check if password and confirm password match
+    if (password !== confirmpassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true); // Set loading to true when form submission starts
+
     try {
-      // Implement signup logic using axios
-      await axios.post(
-        "https://ecobackend-kas3.onrender.com/register",
+      const response = await axios.post(
+        "http://localhost:4000/register",
         formData
       );
-
-      // Display success message
-      alert("Registration successful");
-      navigate("/login");
-      // Redirect to login form using useHistory
-    } catch (error) {
-      console.error("Signup failed:", error);
-      // You can handle errors and display an error message here
-      alert("Registration failed");
-      settextAdmin(false);
+      setSuccess(`${role} is registered successfully`);
+      setError(""); // Clear previous errors
+      setLoading(false);
+      setFormData({
+        fullname: "",
+        email: "",
+        mobile: "",
+        password: "",
+        confirmpassword: "",
+        role: "user", // default role is "user"
+        adminSecretKey: "", // For admin registration
+      }); // Set loading to false after response
+    } catch (err) {
+      setError(err.response ? err.response.data : "Server error");
+      setSuccess(""); // Clear success message if any
+      setLoading(false); // Set loading to false if error occurs
     }
   };
 
   return (
-    <Container className="signup-container">
-      <div className="signup-form">
-        <h2 className="text-center">Signup</h2>
-        <Form
-          className="flex flex-col justify-center items-center"
-          onSubmit={handleSignup}
-        >
-          <Form.Group controlId="usertype">
-            <Form.Label className="label">User Type:</Form.Label>
-            <Form.Control
-              as="select"
-              name="usertype"
-              value={formData.usertype}
+    <div className="min-h-screen bg-black flex justify-center items-center">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-semibold text-center text-white mb-6">
+          Sign Up
+        </h2>
+        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+        {success && (
+          <div className="text-green-500 text-center mb-4">{success}</div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-300" htmlFor="fullname">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="fullname"
+              name="fullname"
+              value={fullname}
               onChange={handleChange}
-              className="input"
+              className="w-full p-3 border border-gray-600 rounded-lg text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-300" htmlFor="email">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-600 rounded-lg text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-300" htmlFor="mobile">
+              Mobile Number
+            </label>
+            <input
+              type="text"
+              id="mobile"
+              name="mobile"
+              value={mobile}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-600 rounded-lg text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-300" htmlFor="password">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-600 rounded-lg text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-300" htmlFor="confirmpassword">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmpassword"
+              name="confirmpassword"
+              value={confirmpassword}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-600 rounded-lg text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-300" htmlFor="role">
+              Role
+            </label>
+            <select
+              id="role"
+              name="role"
+              value={role}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-600 rounded-lg text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
-            </Form.Control>
-          </Form.Group>
+              <option value="farmer">Farmer</option>
+            </select>
+          </div>
 
-          {formData.usertype === "admin" && (
-            <>
-              <Form.Group controlId="secretkey" className="form-group">
-                <Form.Label className="label">Secret Key:</Form.Label>
-                <Form.Control
-                  type="password"
-                  name="secretkey"
-                  value={formData.secretkey}
-                  onChange={handleChange}
-                  className="input"
-                  required
-                />
-              </Form.Group>
-            </>
+          {role === "admin" && (
+            <div className="mb-4">
+              <label className="block text-gray-300" htmlFor="adminSecretKey">
+                Admin Secret Key
+              </label>
+              <input
+                type="password"
+                id="adminSecretKey"
+                name="adminSecretKey"
+                value={adminSecretKey}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-600 rounded-lg text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
           )}
-          <Form.Group controlId="fullname" className="form-group">
-            <Form.Label className="label">Full Name:</Form.Label>
-            <Form.Control
-              type="text"
-              name="fullname"
-              value={formData.fullname}
-              onChange={handleChange}
-              className="input"
-              required
-            />
-          </Form.Group>
 
-          <Form.Group controlId="email" className="form-group">
-            <Form.Label className="label">Email:</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="input"
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="mobile" className="form-group">
-            <Form.Label className="label">Mobile:</Form.Label>
-            <Form.Control
-              type="text"
-              name="mobile"
-              value={formData.mobile}
-              onChange={handleChange}
-              className="input"
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="password" className="form-group">
-            <Form.Label className="label">Password:</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="input"
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="confirmpassword" className="form-group">
-            <Form.Label className="label">Confirm Password:</Form.Label>
-            <Form.Control
-              type="password"
-              name="confirmpassword"
-              value={formData.confirmpassword}
-              onChange={handleChange}
-              className="input"
-              required
-            />
-          </Form.Group>
-
-          {formData.usertype === "user" && <></>}
-
-          <Button
+          <button
             type="submit"
-            className="submit-button neumorphic-button mt-2"
+            className={`w-full p-3 rounded-lg ${
+              loading ? "bg-gray-500" : "bg-blue-600"
+            } text-white`}
+            disabled={loading} // Disable the button when loading
           >
-            {textAdmin ? "processing..." : "SIGNUP"}
-          </Button>
-        </Form>
-        <p className="text-center ">
-          Already have an account?{" "}
-          <Link to="/login" className="loginbtn">
-            Login here
-          </Link>
-        </p>
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <div className="w-5 h-5 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              "Register"
+            )}
+          </button>
+        </form>
       </div>
-    </Container>
+    </div>
   );
 };
 

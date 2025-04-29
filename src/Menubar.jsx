@@ -13,7 +13,9 @@ const Menubar = () => {
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               <img className="h-8 w-auto" src={eco} alt="Logo" />
-              <span className="text-white font-bold ml-2">Greenvestements</span>
+              <span className="text-white font-bold ml-2">
+                GREEN INVESTMENT
+              </span>
             </Link>
           </div>
 

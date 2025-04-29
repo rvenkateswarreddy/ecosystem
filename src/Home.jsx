@@ -19,7 +19,7 @@ const Home = () => {
           <span>with a monthly forest</span> <span></span>
         </h1>
         <p className="homingwelcome">
-          Welcome to ECOSYSTEM, keep investing here.
+          Welcome to Green Investment, keep investing here.
         </p>
         <Link to="/login">
           <button className="book-button" onClick={notify}>

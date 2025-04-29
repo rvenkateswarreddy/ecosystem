@@ -11,7 +11,7 @@ function Percapita() {
       setLoading(true);
       setSearched(true);
       const response = await fetch(
-        `https://ecobackend-kas3.onrender.com/api/per-capita-emissions/${searchTerm}`
+        `http://localhost:4000/api/per-capita-emissions/${searchTerm}`
       );
       if (response.ok) {
         const data = await response.json();

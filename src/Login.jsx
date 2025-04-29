@@ -1,182 +1,109 @@
-// Login.jsx
 import React, { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container } from "react-bootstrap";
-import { ToastContainer, toast } from "react-toastify"; // Import toast from react-toastify
-import "react-toastify/dist/ReactToastify.css"; // Import default styles
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [formDataAdmin, setFormDataAdmin] = useState({
-    email: "",
-    password: "",
-  });
-  const [formDataUser, setFormDataUser] = useState({
-    email: "",
-    password: "",
-  });
-  const [textAdmin, settextAdmin] = useState(false);
-  const [textUser, settextUser] = useState(false);
-  const [authAdmin, setAuthAdmin] = useState(false);
-  const [authUser, setAuthUser] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [message, setMessage] = useState("");
+  const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(false); // State for loading indicator
   const navigate = useNavigate();
 
-  const handleChangeAdmin = (e) => {
-    setFormDataAdmin({ ...formDataAdmin, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleChangeUser = (e) => {
-    setFormDataUser({ ...formDataUser, [e.target.name]: e.target.value });
-  };
-
-  const handleAdminLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    settextAdmin(true);
-    setAuthAdmin(false);
+    console.log(formData); // Log the form data to check if email and password are being sent
+    setLoading(true);
 
     try {
       const response = await axios.post(
         "http://localhost:4000/login",
-        formDataAdmin
+        formData
       );
+      setMessage("Login successful!");
+      setRole(response.data.role);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("role", response.data.role);
+      localStorage.setItem("id", response.data.id);
 
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      const userType = response.data.usertype; // Assuming the server returns the user's usertype
-
-      if (userType === "admin") {
-        alert("Admin login successful");
-
-        navigate("/dashboard");
-        toast.success("Admin successfully logged in!");
+      // Navigate based on the user's role
+      if (response.data.role === "admin") {
+        navigate("/admindashboard"); // Navigate to the admin dashboard
+      } else if (response.data.role === "farmer") {
+        navigate("/farmerdashboard"); // Navigate to the farmer dashboard
       } else {
-        alert("invalid admin details");
-      }
-
-      // Show success toast notification
-    } catch (error) {
-      toast.error("Admin login failed:", error);
-
-      if (error.response && error.response.status === 401) {
-        toast.error(
-          "Admin login failed. Please check your email and password."
-        );
-      } else {
-        toast.error("Admin failed. An error occurred.");
-      }
-    } finally {
-      setAuthAdmin(true);
-      settextAdmin(false);
-    }
-  };
-
-  const handleUserLogin = async (e) => {
-    e.preventDefault();
-    settextUser(true);
-    setAuthUser(false);
-
-    try {
-      const response = await axios.post(
-        "https://ecobackend-kas3.onrender.com/login",
-        formDataUser
-      );
-
-      const token = response.data.token;
-      const userType = response.data.usertype; // Assuming the server returns the user's usertype
-      localStorage.setItem("token", token);
-
-      if (userType === "user") {
-        alert("User login successful");
-
-        navigate("/dashboard");
-        toast.success("User successfully logged in!");
-      } else {
-        alert("invalid user details");
+        navigate("/dashboard"); // Default dashboard if the role is undefined
       }
     } catch (error) {
-      toast.error("User login failed:", error);
-
-      if (error.response && error.response.status === 401) {
-        toast.error("User login failed. Please check your email and password.");
-      } else {
-        toast.error("User login failed. An error occurred.");
-      }
+      setMessage(error.response?.data || "Invalid credentials");
     } finally {
-      setAuthUser(true);
-      settextUser(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Container className="flex justify-center items-center h-screen">
-      <div className="w-1/2 p-8 bg-white rounded-lg shadow-xl m-10">
-        <h2 className="text-center text-2xl font-bold mb-4">Admin Login</h2>
-        <Form onSubmit={handleAdminLogin}>
-          <Form.Group controlId="emailAdmin" className="mb-4">
-            <Form.Label className="block mb-2">Email:</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formDataAdmin.email}
-              onChange={handleChangeAdmin}
-              className="border border-gray-300 px-3 py-2 w-full rounded-md bg-gray-100 focus:outline-none focus:border-blue-500"
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="passwordAdmin" className="mb-4">
-            <Form.Label className="block mb-2">Password:</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              value={formDataAdmin.password}
-              onChange={handleChangeAdmin}
-              className="border border-gray-300 px-3 py-2 w-full rounded-md bg-gray-100 focus:outline-none focus:border-blue-500"
-              required
-            />
-          </Form.Group>
-          <Button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-600"
+    <div className="min-h-screen flex justify-center items-center bg-black text-white">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md"
+      >
+        <h2 className="text-3xl font-bold text-center text-white mb-6">
+          Login
+        </h2>
+        {message && (
+          <p
+            className={`mb-4 text-center text-lg ${
+              message.includes("success") ? "text-green-500" : "text-red-500"
+            }`}
           >
-            {textAdmin ? "processing" : "LOGIN"}
-          </Button>
-        </Form>
-      </div>
-      <div className="w-1/2 p-8 bg-white rounded-lg shadow-xl m-10">
-        <h2 className="text-center text-2xl font-bold mb-4">User Login</h2>
-        <Form onSubmit={handleUserLogin}>
-          <Form.Group controlId="emailUser" className="mb-4">
-            <Form.Label className="block mb-2">Email:</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formDataUser.email}
-              onChange={handleChangeUser}
-              className="border border-gray-300 px-3 py-2 w-full rounded-md bg-gray-100 focus:outline-none focus:border-blue-500"
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="passwordUser" className="mb-4">
-            <Form.Label className="block mb-2">Password:</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              value={formDataUser.password}
-              onChange={handleChangeUser}
-              className="border border-gray-300 px-3 py-2 w-full rounded-md bg-gray-100 focus:outline-none focus:border-blue-500"
-              required
-            />
-          </Form.Group>
-          <Button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-blue-600"
-          >
-            {textUser ? "processing..." : "LOGIN"}
-          </Button>
-        </Form>
-      </div>
-      <ToastContainer />
-    </Container>
+            {message}
+          </p>
+        )}
+        <div className="mb-6">
+          <label className="block text-gray-300">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-4 py-3 mt-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-400"
+            required
+            disabled={loading} // Disable input during loading
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-300">Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full px-4 py-3 mt-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-400"
+            required
+            disabled={loading} // Disable input during loading
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 hover:bg-blue-700"
+          disabled={loading} // Disable the submit button during loading
+        >
+          {loading ? (
+            <div className="flex justify-center items-center">
+              <div className="w-4 h-4 border-2 border-t-2 border-blue-500 rounded-full animate-spin" />
+            </div>
+          ) : (
+            "Login"
+          )}
+        </button>
+        {role && (
+          <p className="mt-4 text-center text-gray-400">Logged in as: {role}</p>
+        )}
+      </form>
+    </div>
   );
 };
 

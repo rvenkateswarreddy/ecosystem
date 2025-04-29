@@ -1,73 +1,152 @@
-import React from "react";
-import { plantsData } from "./plantdata";
-import { useDispatch, useSelector } from "react-redux";
-import { addToCart, removeFromCart } from "./plantSlice";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const PlantsList = () => {
-  const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.cart);
+const PlantList = () => {
+  const [plants, setPlants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [purchasedPlants, setPurchasedPlants] = useState([]); // Track purchased plants
 
-  const handleAddToCart = (plant) => {
-    dispatch(
-      addToCart({
-        id: plant.id,
-        name: plant.name,
-        image: plant.image,
-        details: plant.details,
-        price: plant.price,
-      })
-    );
-    toast.success(`${plant.name} added to cart`);
+  useEffect(() => {
+    const fetchPlants = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/userplants");
+        setPlants(response.data);
+        setLoading(false);
+      } catch (error) {
+        setError("Failed to fetch plants.");
+        setLoading(false);
+      }
+    };
+
+    const fetchPurchasedPlants = async () => {
+      try {
+        const userId = localStorage.getItem("id");
+        const response = await axios.get(
+          `http://localhost:4000/purchased-plants/${userId}`
+        );
+        setPurchasedPlants(response.data);
+      } catch (error) {
+        console.error("Error fetching purchased plants:", error);
+      }
+    };
+
+    fetchPlants();
+    fetchPurchasedPlants();
+  }, []);
+
+  const handleBuy = async (plant) => {
+    try {
+      const userId = localStorage.getItem("id");
+      const orderPayload = {
+        id: userId,
+        plants: [
+          {
+            name: plant.name,
+            price: plant.price,
+            imageUrl: plant.imageUrl,
+            quantity: 1, // Default to buying 1 quantity
+          },
+        ],
+      };
+
+      const response = await axios.post(
+        "http://localhost:4000/create-order2",
+        orderPayload
+      );
+
+      const { orderId, amount } = response.data;
+
+      const options = {
+        key: "rzp_test_KStLt14203VFVn", // Replace with your Razorpay Key ID
+        amount: amount * 100, // Amount in paise
+        currency: "INR",
+        name: "Plant Purchase",
+        description: `Order ID: ${orderId}`,
+        order_id: orderId,
+        handler: async function (response) {
+          // Handle payment success
+          const paymentSuccessPayload = {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            id: userId,
+          };
+          await axios.post(
+            "http://localhost:4000/payment-success2",
+            paymentSuccessPayload
+          );
+          alert("Payment successful!");
+        },
+        prefill: {
+          name: "GREEN INVESTMENT",
+          email: "greeninvestment@gmail.com", // Replace with the user's email
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Error during purchase:", error);
+      alert("Failed to initiate purchase.");
+    }
   };
 
-  const handleRemoveFromCart = (plant) => {
-    dispatch(removeFromCart({ id: plant.id }));
-    toast.error(`${plant.name} removed from cart`);
+  const isPlantPurchased = (plantId) => {
+    // Check if the plant has already been purchased by the user
+    return purchasedPlants.some((p) => p.plantId === plantId);
   };
 
-  // Function to calculate total price
-  const calculateTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.price, 0);
-  };
+  if (loading) {
+    return <div>Loading plants...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
-    <div>
-      <h1 className="text-5xl m-5">TREE SHOP</h1>
-      <div className="grid mx-auto mt-10 grid-cols-3">
-        {plantsData.map((each, index) => (
-          <div
-            key={index}
-            className="max-w-sm rounded overflow-hidden shadow-lg mx-auto mb-4"
-          >
-            <img className="w-full" src={each.image} alt={each.name} />
-            <div className="px-6 py-4">
-              <div className="font-bold text-xl mb-2">{each.name}</div>
-              <p className="text-gray-700 text-base">{each.details}</p>
-              <p className="text-gray-700 text-base">Price: ${each.price}</p>
-              <div className="first-letter:mt-4">
-                <button
-                  onClick={() => handleAddToCart(each)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                >
-                  Add +
-                </button>
-                <button
-                  onClick={() => handleRemoveFromCart(each)}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Remove -
-                </button>
-              </div>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold text-center mb-8">Plant List</h1>
+      {plants.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {plants.map((plant) => (
+            <div
+              key={plant._id}
+              className="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+            >
+              <img
+                src={plant.imageUrl}
+                alt={plant.name}
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
+              <h3 className="text-xl font-semibold mb-2">{plant.name}</h3>
+              <p className="text-gray-300 mb-2">Quantity: {plant.quantity}</p>
+              <p className="text-gray-300 mb-2">Price: ₹{plant.price}</p>
+              <p className="text-gray-300 mb-2">
+                Total Price: ₹{plant.price * plant.quantity}
+              </p>
+              <button
+                onClick={() => handleBuy(plant)}
+                disabled={isPlantPurchased(plant._id)} // Disable if already purchased
+                className={`mt-4 py-2 px-4 rounded transition duration-300 ${
+                  isPlantPurchased(plant._id)
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-green-500 text-white hover:bg-green-600"
+                }`}
+              >
+                {isPlantPurchased(plant._id) ? "Already Bought" : "Buy"}
+              </button>
             </div>
-          </div>
-        ))}
-      </div>
-      <div className="text-xl">Total Price: ${calculateTotalPrice()}</div>
-      <ToastContainer />
+          ))}
+        </div>
+      ) : (
+        <p className="text-center mt-4">No plants available.</p>
+      )}
     </div>
   );
 };
 
-export default PlantsList;
+export default PlantList;

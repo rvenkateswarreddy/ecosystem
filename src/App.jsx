@@ -13,6 +13,8 @@ import Protect from "./Protect.jsx";
 import Sharecomp from "./Sharecomp.jsx";
 import MeetOurTeam from "./MeetOurTeam.jsx";
 import Question from "./Question.jsx";
+import FarmerDashboard from "./FarmerDashboard.jsx";
+import AdminDashboard from "./AdminDashboard.jsx";
 const App = () => {
   return (
     <div>
@@ -35,7 +37,8 @@ const App = () => {
             </Protect>
           }
         />
-        <Route path="/admindashboard/*" element={<Dashboard />} />
+        <Route path="/admindashboard/*" element={<AdminDashboard />} />
+        <Route path="/farmerdashboard/*" element={<FarmerDashboard />} />
       </Routes>
     </div>
   );
