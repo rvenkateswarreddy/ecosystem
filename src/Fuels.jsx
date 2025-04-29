@@ -11,7 +11,7 @@ function Fuels() {
     setSearched(true);
     try {
       const response = await fetch(
-        `http://localhost:4000/api/fuel/${searchTerm}`
+        `https://ecobackend-kas3.onrender.com/api/fuel/${searchTerm}`
       );
       if (response.ok) {
         const data = await response.json();

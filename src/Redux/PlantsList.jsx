@@ -10,7 +10,9 @@ const PlantList = () => {
   useEffect(() => {
     const fetchPlants = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/userplants");
+        const response = await axios.get(
+          "https://ecobackend-kas3.onrender.com/userplants"
+        );
         setPlants(response.data);
         setLoading(false);
       } catch (error) {
@@ -23,7 +25,7 @@ const PlantList = () => {
       try {
         const userId = localStorage.getItem("id");
         const response = await axios.get(
-          `http://localhost:4000/purchased-plants/${userId}`
+          `https://ecobackend-kas3.onrender.com/purchased-plants/${userId}`
         );
         setPurchasedPlants(response.data);
       } catch (error) {
@@ -51,7 +53,7 @@ const PlantList = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:4000/create-order2",
+        "https://ecobackend-kas3.onrender.com/create-order2",
         orderPayload
       );
 
@@ -72,7 +74,7 @@ const PlantList = () => {
             id: userId,
           };
           await axios.post(
-            "http://localhost:4000/payment-success2",
+            "https://ecobackend-kas3.onrender.com/payment-success2",
             paymentSuccessPayload
           );
           alert("Payment successful!");

@@ -10,7 +10,9 @@ const AdminSales = () => {
     const fetchSales = async () => {
       setMessage("Fetching sales data...");
       try {
-        const response = await axios.get("http://localhost:4000/getadminsales");
+        const response = await axios.get(
+          "https://ecobackend-kas3.onrender.com/getadminsales"
+        );
         setSales(response.data.sales);
         setMessage("");
       } catch (error) {
@@ -33,10 +35,13 @@ const AdminSales = () => {
     }));
 
     try {
-      const response = await axios.post("http://localhost:4000/create-order", {
-        id: sale.farmerId,
-        plants: sale.plants,
-      });
+      const response = await axios.post(
+        "https://ecobackend-kas3.onrender.com/create-order",
+        {
+          id: sale.farmerId,
+          plants: sale.plants,
+        }
+      );
 
       const { orderId, amount } = response.data;
 
@@ -48,14 +53,17 @@ const AdminSales = () => {
         description: "Payment for bulk plants",
         order_id: orderId,
         handler: async (response) => {
-          await axios.post("http://localhost:4000/payment-success", {
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            id: sale.farmerId,
-          });
+          await axios.post(
+            "https://ecobackend-kas3.onrender.com/payment-success",
+            {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              id: sale.farmerId,
+            }
+          );
 
           await axios.put(
-            `http://localhost:4000/update-sale-status/${saleId}`,
+            `https://ecobackend-kas3.onrender.com/update-sale-status/${saleId}`,
             {
               status: "Completed",
             }

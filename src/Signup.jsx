@@ -47,7 +47,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/register",
+        "https://ecobackend-kas3.onrender.com/register",
         formData
       );
       setSuccess(`${role} is registered successfully`);

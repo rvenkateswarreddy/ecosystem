@@ -11,7 +11,7 @@ const SalesList = () => {
       setMessage("Fetching sales data...");
       try {
         const response = await axios.get(
-          `http://localhost:4000/getsales/${farmerId}`
+          `https://ecobackend-kas3.onrender.com/getsales/${farmerId}`
         );
         setSales(response.data.sales);
         setMessage("");

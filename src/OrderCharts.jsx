@@ -32,11 +32,11 @@ const OrderCharts = () => {
     const fetchChartsData = async () => {
       try {
         const pieResponse = await fetch(
-          "http://localhost:4000/orders/pie-chart"
+          "https://ecobackend-kas3.onrender.com/orders/pie-chart"
         );
         const pieResult = await pieResponse.json();
         const lineResponse = await fetch(
-          "http://localhost:4000/orders/line-chart"
+          "https://ecobackend-kas3.onrender.com/orders/line-chart"
         );
         const lineResult = await lineResponse.json();
 

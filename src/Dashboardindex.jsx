@@ -31,9 +31,13 @@ const OrderCharts = () => {
   useEffect(() => {
     const fetchChartsData = async () => {
       try {
-        const pieResponse = await fetch("http://localhost:4000/pie-chart");
+        const pieResponse = await fetch(
+          "https://ecobackend-kas3.onrender.com/pie-chart"
+        );
         const pieResult = await pieResponse.json();
-        const lineResponse = await fetch("http://localhost:4000/line-chart");
+        const lineResponse = await fetch(
+          "https://ecobackend-kas3.onrender.com/line-chart"
+        );
         const lineResult = await lineResponse.json();
 
         // Pie chart data

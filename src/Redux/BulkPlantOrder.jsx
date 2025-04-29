@@ -42,11 +42,14 @@ const BulkPlantOrder = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:4000/add-sale", {
-        plants,
-        totalAmount,
-        farmerId: id,
-      });
+      const response = await axios.post(
+        "https://ecobackend-kas3.onrender.com/add-sale",
+        {
+          plants,
+          totalAmount,
+          farmerId: id,
+        }
+      );
 
       if (response.status === 201) {
         setMessage("Request sent successfully to Green Investment Company!");

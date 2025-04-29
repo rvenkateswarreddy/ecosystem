@@ -12,7 +12,9 @@ const FarmerOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/orders/${id}`);
+        const response = await axios.get(
+          `https://ecobackend-kas3.onrender.com/orders/${id}`
+        );
         setOrders(response.data.data);
       } catch (err) {
         console.error("Error fetching orders:", err.message);

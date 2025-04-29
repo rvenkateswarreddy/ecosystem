@@ -10,7 +10,7 @@ const OrderedPayments = () => {
       setMessage("Fetching ordered payments...");
       try {
         const response = await axios.get(
-          "http://localhost:4000/ordered-payments"
+          "https://ecobackend-kas3.onrender.com/ordered-payments"
         );
         setOrderedPayments(response.data.data);
         setMessage("");

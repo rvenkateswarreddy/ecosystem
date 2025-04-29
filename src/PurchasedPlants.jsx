@@ -11,7 +11,7 @@ const PurchasedPlants = () => {
     const fetchOrderDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/order-details/${userId}`
+          `https://ecobackend-kas3.onrender.com/order-details/${userId}`
         );
         setOrderDetails(response.data);
         setLoading(false);

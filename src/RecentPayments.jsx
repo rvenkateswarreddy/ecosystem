@@ -10,7 +10,7 @@ const RecentPayments = () => {
     const fetchRecentPayments = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/recent-payments"
+          "https://ecobackend-kas3.onrender.com/recent-payments"
         );
         setPayments(response.data.data);
       } catch (err) {

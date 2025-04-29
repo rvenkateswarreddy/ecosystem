@@ -11,7 +11,7 @@ const AdminUsersPlant = () => {
       setMessage("Fetching completed orders...");
       try {
         const response = await axios.get(
-          "http://localhost:4000/completed-orders"
+          "https://ecobackend-kas3.onrender.com/completed-orders"
         );
         setCompletedOrders(response.data);
         setMessage("");
@@ -27,7 +27,7 @@ const AdminUsersPlant = () => {
   const handleReleaseToUserStore = async (plant) => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/release-to-userstore",
+        "https://ecobackend-kas3.onrender.com/release-to-userstore",
         plant
       );
       setReleasedPlants([...releasedPlants, plant._id]); // Mark plant as released
